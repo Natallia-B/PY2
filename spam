@@ -1,0 +1,10 @@
+def spam(int):
+    egg="egg"
+    spam_egg=""
+    #while 1:
+    for i in range(int):
+        spam_egg+=egg
+        print "".join(spam_egg)
+
+
+print (spam(int(raw_input("Enter number: "))))

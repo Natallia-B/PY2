@@ -8,6 +8,7 @@ def number(str):
     str1= ""
     str2= ""
     num = str
+    #num2 = str [:-3]
     if int(num) < 99:
         if int(num) < 20:
             str1 = (number1[int(num)])
@@ -16,14 +17,14 @@ def number(str):
                 str1 = (number2[int(num) / 10])
             else:
                 str1 = (number2[int(num) / 10]) + " " + (number1[int(num) % 10])
-    elif 999 > int(num) > 99:
+    elif 1000 > int(num) > 99:
             if int(num) % 100 < 20:
                 str1 = (number1[int(num) / 100] + " " + hu + " " + (number1[int(num)%100]))
-            elif 19 < int(num) % 100 < 99:
+            elif 19 < int(num) % 100 < 100:
                 if int(num[(len(num) - 1)]) == 0:
-                    str1 = (number1[int(num) / 100] + " " + hu + " " + (number2[(int(num)-100)/10]))
+                    str1 = (number1[int(num) / 100] + " " + hu + " " + (number2[(int(num)%100)/10]))
                 else:
-                    str1 = (number1[int(num) / 100] + " " + hu + " " + (number2[(int(num)-100)/10]) + " " + (number1[int(num)%10]))
+                    str1 = (number1[int(num) / 100] + " " + hu + " " + (number2[(int(num)%100)/10]) + " " + (number1[int(num)%10]))
     return str1
 
 while 1:

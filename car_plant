@@ -1,0 +1,103 @@
+from pprint import pprint
+
+
+class Car(object):
+    DIESEL = 'diesel'
+    PETROL = 'petrol'
+    TANK_VOLUME_75 = 75
+    TANK_VOLUME_60 = 60
+
+    def __init__(self, engine, tank, price=10000):
+        self.engine = engine
+        self.tank = tank
+        self.total_fuel_cost = 0
+        self.fuel_level = 0
+        self.mileage = 1000
+        self.price = price
+
+    def get_fprice(self):
+        if self.engine == Car.DIESEL:
+            return 1.8
+        else:
+            return 2, 4
+
+    def get_consumption(self):
+        if self.engine == Car.DIESEL:
+            if self.mileage > 1000:
+                self.consumption = 6/100 * self.mileage/1000 * 1.01
+            else:
+                self.consumption = 6/100
+        else:
+            if self.mileage > 1000:
+                self.consumption = 8/100 * self.mileage/1000 * 1.01
+            else:
+                self.consumption = 8/100
+        return self.consumption
+
+    def get_maxmileage(self):
+        if self.engine == Car.DIESEL:
+            self.maxmileage = 150000
+        else:
+            self.maxmileage = 100000
+        return self.maxmileage
+
+    def get_price_reduction(self):
+        if self.engine == Car.DIESEL:
+            reduction = 10.5
+        else:
+            reduction = 9.5
+        return reduction
+
+    def get_renovation_cost(self):
+        if engine == Car.DISEL:
+            self.renovation_cost = 150000
+        else:
+            self.renovation_cost = 100000
+        return self.renovation_cost
+
+    def fill_fuel(self, l):
+        if l < self.tank - self.fuel_level:
+            self.fuel_level += l
+        else:
+            l = self.tank - self.fuel_level
+            self.fuel_level += l
+        self.total_fuel_cost += self.get_fprice() * l
+        return self.fuel_level
+
+    def drive(self, km):
+        if km > ((self.fuel_level - km) * self.get_consumption()):
+            km = self.fuel_level - km * self.get_consumption()
+            print ('You can dive only ', self.fuel_level / self.get_consumption(), 'km')
+        elif km > self.get_maxmileage() - self.mileage:
+            print ('You can dive only ', self.get_maxmileage() - self.mileage, 'km')
+        else:
+            self.mileage += km
+            self.price -= self.mileage/1000*self.get_price_reduction()
+            self.fuel_level = km * self.get_consumption()
+        return self.mileage, self.price,
+
+
+class CarPlant(object):
+    @staticmethod
+    def produce_car(car_number):
+        all_cars = []
+        for _ in range(car_number):
+            if not _ % 3:
+                engine = Car.DIESEL
+            else:
+                engine = Car.PETROL
+            if not _ % 5:
+                tank = Car.TANK_VOLUME_60
+            else:
+                tank = Car.TANK_VOLUME_75
+            all_cars.append(Car(engine, tank))
+        return (all_cars)
+
+
+# p = CarPlant()
+all_cars = CarPlant.produce_car(20)
+print(all_cars[10])
+all_cars[0].fill_fuel(80)
+all_cars[0].drive(10)
+print (all_cars[0].mileage)
+print (all_cars[0].fuel_level)

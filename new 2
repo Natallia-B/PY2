@@ -1,0 +1,124 @@
+from pprint import pprint as pp
+import random
+
+
+class Car(object):
+    DIESEL = 'diesel'
+    PETROL = 'petrol'
+    TANK_VOLUME_75 = 75.00
+    TANK_VOLUME_60 = 60.00
+
+    def __init__(self, engine, tank):
+        self.engine = engine
+        self.tank = tank
+        self.fuel_level = 0
+        self.mileage = 0
+        self.price = 100000.00
+        self.total_fuel_cost = 0
+
+    # @property
+    # def stop_milleage(self):
+    #     return (self.mileage)
+
+    def get_maxmileage(self):
+        maxmileage = int()
+        if self.engine == Car.DIESEL:
+            self.maxmileage = 150000
+        else:
+            self.maxmileage = 100000
+        return self.maxmileage
+
+    def get_fuel_price(self):
+        if self.engine == Car.DIESEL:
+            return 1.8
+        else:
+            return 2.4
+
+    def get_renovation_cost(self):
+        if engine == Car.DISEL:
+            self.renovation_cost = 700
+        else:
+            self.renovation_cost = 500
+        return self.renovation_cost
+
+    def get_fuel_consumption(self):
+        if self.engine == Car.DIESEL:
+            if self.mileage > 1000:
+                self.fuel_consumption = 6.00 / 100.00 * self.mileage / 1000.00 * 1.01
+            else:
+                self.fuel_consumption = 6.00 / 100.00
+        else:
+            if self.mileage > 1000.00:
+                self.fuel_consumption = 8.00 / 100.00 * self.mileage / 1000.00 * 1.01
+            else:
+                self.fuel_consumption = 8.00 / 100.00
+        return self.fuel_consumption
+
+    def get_price_reduction(self):
+        if self.engine == Car.DIESEL:
+            if self.mileage > 1000:
+                self.price = 100000 - self.mileage / 1000 * 10.5
+        else:
+            if self.mileage > 1000:
+                self.price = 100000 - self.mileage / 1000 * 9.5
+        return self.price
+
+    def fill_fuel(self, l):
+        if l < self.tank - self.fuel_level:
+            self.fuel_level += l
+        else:
+            l = self.tank - self.fuel_level
+            self.fuel_level = self.tank
+        self.total_fuel_cost += l * self.get_fuel_price()
+        return self.fuel_level
+
+    def drive(self):
+        refueling = 1
+        km = int()
+        km = random.randrange(55000, 286000)
+        self.fuel_level = self.fill_fuel(self.tank)
+        for route in range(km):
+            if self.get_maxmileage() <= self.mileage:
+                break
+            else:
+                if self.fuel_level < 1:
+                    self.fuel_level = self.fill_fuel(self.tank)
+                    refueling += 1
+                self.mileage += route
+                self.price = self.get_price_reduction()
+                self.fuel_level -= self.get_fuel_consumption()
+        #print ('Mileage =', self.mileage ,  'Price =', self.price, ' Total fuel cost =', total_fuel_cost, 'Refueling =' , refueling, ' Renovation after ' (self.maxmileage - self.mileage) 'km)
+        return self.mileage, self.price, self.fuel_level
+
+class CarPlant(object):
+    @staticmethod
+    def produce_car(car_number):
+        all_cars = []
+        for _ in range(car_number):
+            if not _ % 3:
+                engine = Car.DIESEL
+            else:
+                engine = Car.PETROL
+            if not _ % 5:
+                tank = Car.TANK_VOLUME_60
+            else:
+                tank = Car.TANK_VOLUME_75
+            all_cars.append(Car(engine, tank))
+        return all_cars
+
+
+all_cars = CarPlant.produce_car(20)
+# all_cars[0].mileage = 100
+#print (all_cars[0].mileage)
+# all_cars[0].fill_fuel(6)
+# all_cars[2].fill_fuel(80)
+
+# all_cars[random.randint(0, 19)].drive()
+# all_cars.drive()
+
+for car in range(20):
+    all_cars[car].drive()
+
+# for i in range(20):
+#     print(all_cars[i].__dict__)
+

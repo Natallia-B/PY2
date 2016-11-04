@@ -1,0 +1,24 @@
+import re
+import sys, cStringIO
+zen = cStringIO.StringIO()
+old_stdout = sys.stdout
+sys.stdout = zen
+import this
+sys.stdout = old_stdout
+s=zen.getvalue()
+raw=[x for x in s.split('\n')]
+d={}
+i=1
+for y in raw:
+        d[(i)] = y
+        i=i+1
+#print d
+
+def fun1 (str, dict):
+        res=[val for val in dict.values() if re.match (re.sub(r'[^a-zA-Z]',"", str, re.I), val, re.I)]
+        return(res[:5]);
+
+print '\n'.join(fun1(str(raw_input("Enter something: ")), d))
+
+
+

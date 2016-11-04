@@ -1,0 +1,15 @@
+def to_weird(str):
+    i = 0
+    new_string=""
+    for c in str:
+        if(i % 2 == 0):
+            new_string += c.lower()
+        else:
+            new_string += c.upper()
+        i+=1
+    return(new_string)
+print (to_weird(str(raw_input("Enter something: "))))
+
+
+
+

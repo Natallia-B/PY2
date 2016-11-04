@@ -1,0 +1,10 @@
+def sum(str):
+    #new_list = [i for i in str if '0'<=i<='9']
+    new_list = [i for i in str.split(',') if '0'<=i<='9']
+    ak=0
+    for i in new_list:
+        #if i.isdigit():
+        ak+=int(i)
+        continue
+    return (ak)
+print (sum(str(raw_input("Enter something including numbers, separate with comma: "))))

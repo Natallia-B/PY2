@@ -76,19 +76,21 @@ class Car(object):
         refueling = 1
         km = int()
         km = random.randrange(55000, 286000)
+        # print km
         self.fuel_level = self.fill_fuel(self.tank)
         for route in range(km):
-            if self.get_maxmileage() <= self.mileage:
-                break
-            else:
+            if self.mileage < self.get_maxmileage():
+                self.mileage += 1
+                self.price = self.get_price_reduction()
+                self.fuel_level -= self.get_fuel_consumption()
+                renovation= self.get_maxmileage() - self.mileage
                 if self.fuel_level < 1:
                     self.fuel_level = self.fill_fuel(self.tank)
                     refueling += 1
-                self.mileage += route
-                self.price = self.get_price_reduction()
-                self.fuel_level -= self.get_fuel_consumption()
-        #print ('Mileage =', self.mileage ,  'Price =', self.price, ' Total fuel cost =', total_fuel_cost, 'Refueling =' , refueling, ' Renovation after ' (self.maxmileage - self.mileage) 'km)
-        return self.mileage, self.price, self.fuel_level
+            else:
+                break
+        print ('Mileage =', self.mileage ,  'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =' , refueling, ' Renovation after ', renovation, 'km')
+        # return self.mileage, self.price, self.fuel_level
 
 class CarPlant(object):
     @staticmethod
@@ -107,16 +109,16 @@ class CarPlant(object):
         return all_cars
 
 
-all_cars = CarPlant.produce_car(20)
+all_cars = CarPlant.produce_car(100)
 # all_cars[0].mileage = 100
-#print (all_cars[0].mileage)
+# print (all_cars[0].mileage)
 # all_cars[0].fill_fuel(6)
 # all_cars[2].fill_fuel(80)
 
-# all_cars[random.randint(0, 19)].drive()
-# all_cars.drive()
+#all_cars[random.randint(0, 19)].drive()
 
-for car in range(20):
+
+for car in range(100):
     all_cars[car].drive()
 
 # for i in range(20):

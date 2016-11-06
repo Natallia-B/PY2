@@ -8,17 +8,21 @@ class Car(object):
     TANK_VOLUME_75 = 75.00
     TANK_VOLUME_60 = 60.00
 
-    def __init__(self, engine, tank):
+    def __init__(self, engine, tank, mileage = 0):
         self.engine = engine
         self.tank = tank
+        self._mileage = mileage
         self.fuel_level = 0
-        self.mileage = 0
         self.price = 100000.00
         self.total_fuel_cost = 0
+        
+    @property
+    def milleage(self):
+        return (self._mileage)
 
-    # @property
-    # def stop_milleage(self):
-    #     return (self.mileage)
+    @milleage.setter
+    def milleage(self, millege):
+        self._milleage = self._milleage
 
     def get_maxmileage(self):
         maxmileage = int()
@@ -43,24 +47,24 @@ class Car(object):
 
     def get_fuel_consumption(self):
         if self.engine == Car.DIESEL:
-            if self.mileage > 1000:
-                self.fuel_consumption = 6.00 / 100.00 * self.mileage / 1000.00 * 1.01
+            if self._mileage > 1000:
+                self.fuel_consumption = 6.00 / 100.00 * self._mileage / 1000.00 * 1.01
             else:
                 self.fuel_consumption = 6.00 / 100.00
         else:
-            if self.mileage > 1000.00:
-                self.fuel_consumption = 8.00 / 100.00 * self.mileage / 1000.00 * 1.01
+            if self._mileage > 1000.00:
+                self.fuel_consumption = 8.00 / 100.00 * self._mileage / 1000.00 * 1.01
             else:
                 self.fuel_consumption = 8.00 / 100.00
         return self.fuel_consumption
 
     def get_price_reduction(self):
         if self.engine == Car.DIESEL:
-            if self.mileage > 1000:
-                self.price = 100000 - self.mileage / 1000 * 10.5
+            if self._mileage > 1000:
+                self.price = 100000 - self._mileage / 1000 * 10.5
         else:
-            if self.mileage > 1000:
-                self.price = 100000 - self.mileage / 1000 * 9.5
+            if self._mileage > 1000:
+                self.price = 100000 - self._mileage / 1000 * 9.5
         return self.price
 
     def fill_fuel(self, l):
@@ -79,17 +83,17 @@ class Car(object):
         # print km
         self.fuel_level = self.fill_fuel(self.tank)
         for route in range(km):
-            if self.mileage < self.get_maxmileage():
-                self.mileage += 1
+            if self._mileage < self.get_maxmileage():
+                self._mileage += 1
                 self.price = self.get_price_reduction()
                 self.fuel_level -= self.get_fuel_consumption()
-                renovation= self.get_maxmileage() - self.mileage
+                renovation= self.get_maxmileage() - self._mileage
                 if self.fuel_level < 1:
                     self.fuel_level = self.fill_fuel(self.tank)
                     refueling += 1
             else:
                 break
-        print ('Mileage =', self.mileage ,  'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =' , refueling, ' Renovation after ', renovation, 'km')
+        print ('Mileage =', self._mileage ,  'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =' , refueling, ' Renovation after ', renovation, 'km')
         # return self.mileage, self.price, self.fuel_level
 
 class CarPlant(object):
@@ -109,7 +113,7 @@ class CarPlant(object):
         return all_cars
 
 
-all_cars = CarPlant.produce_car(100)
+all_cars = CarPlant.produce_car(10)
 # all_cars[0].mileage = 100
 # print (all_cars[0].mileage)
 # all_cars[0].fill_fuel(6)
@@ -118,9 +122,10 @@ all_cars = CarPlant.produce_car(100)
 #all_cars[random.randint(0, 19)].drive()
 
 
-for car in range(100):
+for car in range(10):
     all_cars[car].drive()
 
 # for i in range(20):
 #     print(all_cars[i].__dict__)
 
+all_cars[0].mileage = 0

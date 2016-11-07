@@ -1,0 +1,21 @@
+import random
+def my_range():
+    x=random.random()*10
+    number = 0
+    while number < x:
+        yield number
+        number += 1
+ranger = my_range()
+
+
+def print_my_range(ranger):
+    while 1:
+        try:
+            print next(ranger)
+        except StopIteration:
+            print ("End of range")
+            break
+    print ("Done")
+
+
+print_my_range(ranger)

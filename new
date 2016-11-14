@@ -1,5 +1,13 @@
 from pprint import pprint as pp
 import random
+import threading
+from time import sleep
+from threading import Thread, Lock, RLock, BoundedSemaphore, Semaphore
+
+max_connections = 10
+sb = BoundedSemaphore(max_connections)
+s = Semaphore(2)
+stop = RLock()
 
 
 class Car(object):
@@ -9,7 +17,7 @@ class Car(object):
     TANK_VOLUME_60 = 60.00
 
     def __init__(self, engine, tank, mileage=0):
-        self.engine = engine
+        self._engine = engine
         self.tank = tank
         self._mileage = mileage
         self.renovation = 0
@@ -19,14 +27,28 @@ class Car(object):
         self.price = 100000.00
         self.total_fuel_cost = 0
         self.service_pass = 0
+        self.total_service_cost = 0
+
+    def __iter__(self):
+        return iter(self.__dict__.values())
+
+    def __str__(self):
+        return str(self.__class__) + ": " + str(self.__dict__)
+
+    def __repr__(self):
+        return 'Car("%s","%s", "%s)' % (self._engine, self.renovation, self.price)
 
     @property
     def mileage(self):
         return (self._mileage)
 
     @mileage.setter
-    def milleage(self, millege):
-        self._mileage = self._mileage
+    def mileage(self, mileage):
+        self._mileage = self.get_mileage
+
+    @property
+    def engine(self):
+        return (self._engine)
 
     def get_maxmileage(self):
         maxmileage = int()
@@ -44,25 +66,28 @@ class Car(object):
         if self.engine == Car.DIESEL:
             return 1.8
         else:
-            return 2.4
+            if self.mileage <= 50000:
+                return 2.2
+            else:
+                return 2.4
 
     def get_renovation_cost(self):
-        if engine == Car.DISEL:
+        if self.engine == Car.DIESEL:
             self.renovation_cost = 700
         else:
             self.renovation_cost = 500
         return self.renovation_cost
 
     def get_fuel_consumption(self):
-        i = int(int(self._mileage) / 1000)
+        percentile = int(self._mileage / 1000)
         if self.engine == Car.DIESEL:
-            if self._mileage > 1000.00:
-                self.fuel_consumption = 0.06 + (i*0.0006)
+            if percentile >= 1:
+                self.fuel_consumption = 0.06 + (int(percentile) * 0.0006)
             else:
                 self.fuel_consumption = 0.06
         else:
-            if self._mileage > 1000.00:
-                self.fuel_consumption = 0.08 + (i*0.0008)
+            if percentile >= 1:
+                self.fuel_consumption = 0.08 + (int(percentile) * 0.0008)
             else:
                 self.fuel_consumption = 0.08
 
@@ -87,9 +112,10 @@ class Car(object):
         return self.fuel_level
 
     def drive(self):
+        sb.acquire()
         km = int()
         km = random.randrange(55000, 286000)
-        # print km
+
         self.fuel_level = self.fill_fuel(self.tank)
         self.refueling += 1
         for route in range(km):
@@ -104,19 +130,35 @@ class Car(object):
                     self.refueling += 1
             else:
                 break
-        # print ('Mileage =', self._mileage ,  'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =' , self.refueling, ' Renovation after ', self.renovation, 'km')
-        return self._mileage, self.price, self.fuel_level, self.fuel_consumption
+        print (
+        'Mileage =', self._mileage, 'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =',
+        self.refueling, ' Renovation after ', self.renovation, 'km')
+        sleep(1)
+        sb.release()
+        return self.fuel_level, self.fuel_consumption
 
-    def car_service (self):
+    def get_car_service(self):
+
         for kfz in all_cars:
             if self.renovation == 0:
                 self.renovation = self.maxmileage
                 self.maxmileage += self.maxmileage
                 self.service_pass += 1
-            return self.service_pass
+                self.fuel_level = 0
+                self.total_service_cost += self.get_renovation_cost()
+            return self.total_service_cost
+
+    # @staticmethod
+    # def print_results():
+    #     all_diesel = []
+    #     print all_cars
+    #     for car in all_cars:
+    #         if car.engine == 'diesel':
+    #             all_diesel.append(car)
+    #     print (all_diesel)
+
 
 class CarPlant(object):
-
     @staticmethod
     def produce_car(car_number):
         all_cars = []
@@ -133,22 +175,44 @@ class CarPlant(object):
         return all_cars
 
 
+class Carpool(object):
+    @staticmethod
+    def go(car_number):
+        car = 0
+        all_threads = []
+        for car in range(car_number):
+            thread = threading.Thread(target=all_cars[car].drive)
+            # print threa.getName
+            all_threads.append(thread)
+        for thread in all_threads:
+            if not thread.is_alive():
+                thread.start()
+                thread.join()
+
+
+class Accounting(object):
+    @staticmethod
+    def print_results():
+        all_diesel = []
+        all_petrol =[]
+        total_price = 0
+        #print all_cars
+        for car in all_cars:
+            total_price += car.price
+            if car.engine == 'diesel':
+                all_diesel.append(car)
+            else:
+                all_petrol.append(car)
+        all_petrol.sort(key=lambda x: x.renovation)
+        all_diesel.sort(key=lambda x: x.price)
+        # all_cars.reduce(key=lambda x: x.price)
+
+        print str(all_diesel), str(all_petrol), total_price
+
+
+
 all_cars = CarPlant.produce_car(10)
-# all_cars[0].mileage = 100
-# print (all_cars[0].mileage)
-# all_cars[0].fill_fuel(6)
-# all_cars[2].fill_fuel(80)
-
-#all_cars[random.randint(0, 19)].drive()
-
-
-for car in range(10):
-    all_cars[car].drive()
-
-# for car in range(10):
-#     all_cars[car].car_service()
-
-for i in range(10):
-    print(all_cars[i].__dict__)
-
-# all_cars[0].mileage = 0
+Carpool.go(10)
+# for i in range(11):
+#     print(all_cars[i].__dict__)
+Accounting.print_results()

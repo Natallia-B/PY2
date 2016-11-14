@@ -4,7 +4,7 @@ import threading
 from time import sleep
 from threading import Thread, Lock, RLock, BoundedSemaphore, Semaphore
 
-max_connections = 10
+max_connections = 2
 sb = BoundedSemaphore(max_connections)
 s = Semaphore(2)
 stop = RLock()
@@ -112,13 +112,18 @@ class Car(object):
         return self.fuel_level
 
     def drive(self):
-        sb.acquire()
+        s.acquire(4)
+        sleep(2)
         km = int()
+
         km = random.randrange(55000, 286000)
 
         self.fuel_level = self.fill_fuel(self.tank)
         self.refueling += 1
+
         for route in range(km):
+
+
             if self._mileage < self.get_maxmileage():
                 self._mileage += 1
                 self.price = self.get_price_reduction()
@@ -130,12 +135,14 @@ class Car(object):
                     self.refueling += 1
             else:
                 break
-        print (
-        'Mileage =', self._mileage, 'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =',
-        self.refueling, ' Renovation after ', self.renovation, 'km')
-        sleep(1)
-        sb.release()
-        return self.fuel_level, self.fuel_consumption
+
+        print ('Mileage =', self._mileage, 'Price =', self.price, ' Total fuel cost =', self.total_fuel_cost, 'Refueling =',
+        self.refueling, ' Renovation after ', self.renovation, 'km', )
+
+
+        # return self.fuel_level, self.fuel_consumption
+
+        s.release()
 
     def get_car_service(self):
 
@@ -178,16 +185,18 @@ class CarPlant(object):
 class Carpool(object):
     @staticmethod
     def go(car_number):
-        car = 0
+        # car = 0
         all_threads = []
         for car in range(car_number):
             thread = threading.Thread(target=all_cars[car].drive)
-            # print threa.getName
+            print thread.getName
             all_threads.append(thread)
-        for thread in all_threads:
-            if not thread.is_alive():
-                thread.start()
-                thread.join()
+        for each in all_threads:
+            # if not thread.is_alive():
+            each.start()
+        for each in all_threads:
+            # if not thread.is_alive():
+            each.join()
 
 
 class Accounting(object):
